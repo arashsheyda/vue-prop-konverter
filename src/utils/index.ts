@@ -279,11 +279,14 @@ export function extractProps(body: string) {
  * @returns TypeScript type as string
  */
 export function inferTypeFromValueOrValueToken(value: string, propValueBlock: string): string {
-  const propTypeMatch = propValueBlock.match(/PropType\s*<\s*([^>]+)\s*>/)
-  if (propTypeMatch) return propTypeMatch[1].trim()
+  const propType = extractPropType(propValueBlock, 'PropType')
+  if (propType) return propType
 
-  const asPropTypeMatch = propValueBlock.match(/as\s+PropType\s*<\s*([^>]+)\s*>/)
-  if (asPropTypeMatch) return asPropTypeMatch[1].trim()
+  const asPropTypeIndex = propValueBlock.indexOf('as PropType<')
+  if (asPropTypeIndex !== -1) {
+    const asPropType = extractPropType(propValueBlock.slice(asPropTypeIndex), 'PropType')
+    if (asPropType) return asPropType
+  }
 
   const typeMatch = propValueBlock.match(/type\s*:\s*([A-Za-z0-9_$.|&\\[\]\s]+)/)
   if (typeMatch) {
@@ -327,4 +330,24 @@ function inferTypeFromDefault(value?: string): string {
   if (value.startsWith('[') || (value.startsWith('(') && value.includes('['))) return 'any[]'
   if (value.startsWith('{') || (value.startsWith('(') && value.includes('{'))) return 'Record<string, any>'
   return 'any'
+}
+
+function extractPropType(input: string, keyword: string): string | null {
+  const index = input.indexOf(`${keyword}<`)
+  if (index === -1) return null
+
+  // Skip past 'PropType<'
+  let i = index + keyword.length + 1
+  let depth = 1
+  let typeStr = ''
+
+  while (i < input.length && depth > 0) {
+    const char = input[i]
+    if (char === '<') depth++
+    else if (char === '>') depth--
+    if (depth > 0) typeStr += char
+    i++
+  }
+
+  return typeStr.trim()
 }
