@@ -27,7 +27,7 @@ export function scanDocument(
   const foundDiagnostics: vscode.Diagnostic[] = []
 
   // Regex to detect object-style defineProps
-  const regex = /(?:const\s+\w+\s*=\s*)?defineProps\s*\(/g
+  const regex = /(?:\b(?:const|let|var)\s*(?:\{[\s\S]*?\}|\w+)\s*=\s*)?defineProps\s*\(/g
   let match: RegExpExecArray | null
 
   while ((match = regex.exec(text))) {
