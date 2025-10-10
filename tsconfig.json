@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "commonjs",
+    "lib": ["esnext"],
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true,
+    "types": ["vscode", "node"],
+  },
+  "types": ["vite/client", "vue"],
+  "include": ["src"],
+  "exclude": ["node_modules", ".vscode-test"]
+}
