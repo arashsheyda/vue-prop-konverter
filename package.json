@@ -4,7 +4,7 @@
   "icon": "resources/icon.png",
   "description": "Converts Vue defineProps({}) object syntax to TypeScript-safe defineProps<>() syntax with destructuring.",
   "publisher": "arashsheyda",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": {
     "url": "https://github.com/arashsheyda/vue-prop-konverter",
     "type": "git"
@@ -37,6 +37,7 @@
   },
   "scripts": {
     "build": "tsc -p .",
+    "build:code": "tsc -p . && vsce package",
     "watch": "tsc -watch -p .",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix"
