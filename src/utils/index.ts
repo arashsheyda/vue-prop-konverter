@@ -291,10 +291,10 @@ export function inferTypeFromValueOrValueToken(value: string, propValueBlock: st
     if (typeStr.startsWith('[')) {
       return typeStr.replace(/\[|\]/g, '')
         .split(',')
-        .map(t => convertBasicType(t.trim()))
+        .map(t => normalizeType(t.trim()))
         .join(' | ')
     }
-    return convertBasicType(typeStr)
+    return normalizeType(typeStr)
   }
 
   return inferTypeFromDefault(value)
@@ -303,28 +303,28 @@ export function inferTypeFromValueOrValueToken(value: string, propValueBlock: st
 /**
  * Helper: converts Vue basic types to TypeScript equivalents
  */
-function convertBasicType(tName: string): string {
-  switch (tName) {
+function normalizeType(type: string): string {
+  switch (type) {
     case 'String': return 'string'
     case 'Number': return 'number'
     case 'Boolean': return 'boolean'
     case 'Array': return 'any[]'
     case 'Object': return 'Record<string, any>'
     case 'Function': return '(...args: any[]) => any'
-    default: return tName
+    default: return type
   }
 }
 
 /**
  * Helper: infer type from default value when type not explicitly declared
  */
-function inferTypeFromDefault(def?: string): string {
-  if (!def) return 'any'
-  if (/^["'`].*["'`]$/.test(def)) return 'string'
-  if (/^\d+(\.\d+)?$/.test(def)) return 'number'
-  if (/^(true|false)$/.test(def)) return 'boolean'
-  if (def.startsWith('(') && def.slice(1).trim().startsWith('[')) return 'any[]'
-  if (def.startsWith('[') || (def.startsWith('(') && def.includes('['))) return 'any[]'
-  if (def.startsWith('{') || (def.startsWith('(') && def.includes('{'))) return 'Record<string, any>'
+function inferTypeFromDefault(value?: string): string {
+  if (!value) return 'any'
+  if (/^["'`].*["'`]$/.test(value)) return 'string'
+  if (/^\d+(\.\d+)?$/.test(value)) return 'number'
+  if (/^(true|false)$/.test(value)) return 'boolean'
+  if (value.startsWith('(') && value.slice(1).trim().startsWith('[')) return 'any[]'
+  if (value.startsWith('[') || (value.startsWith('(') && value.includes('['))) return 'any[]'
+  if (value.startsWith('{') || (value.startsWith('(') && value.includes('{'))) return 'Record<string, any>'
   return 'any'
 }

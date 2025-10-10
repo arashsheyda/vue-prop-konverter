@@ -44,7 +44,7 @@ export function scanDocument(
     const range = new vscode.Range(startPos, endPos)
 
     // Only flag inside TypeScript `<script setup>`
-    const isScriptTs = /<script\s+setup\s+lang=["']ts["']/.test(text)
+    const isScriptTs = /<script\b(?=[^>]*\bsetup\b)(?=[^>]*\blang=["']ts["'])/.test(text)
     if (!isScriptTs) continue
 
     const diagnostic = new vscode.Diagnostic(
