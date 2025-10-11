@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
 import { convertProps } from '../core/converter'
+import { isScriptSetupTs } from '../shared'
 
 /**
  * Provides quick fixes for Vue defineProps conversion.
@@ -26,8 +27,9 @@ export const propFixProvider: vscode.CodeActionProvider = {
       if (diagnostic.code !== 'props.TypeSyntax') continue
 
       const fullText = document.getText()
-      const isScriptTs = /<script\s+setup\s+lang=['"]ts['"]/.test(fullText)
-      if (!isScriptTs) continue
+      
+      // Only flag inside TypeScript `<script setup>`
+      if (!isScriptSetupTs(fullText)) continue
 
       const oldCode = document.getText(diagnostic.range)
       const replacement = convertProps(oldCode)

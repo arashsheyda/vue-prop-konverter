@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
 import { findMatching } from '../utils'
+import { isScriptSetupTs, definePropsRegex } from '../shared'
 
 /**
  * Creates a VSCode diagnostic collection for this extension.
@@ -26,11 +27,9 @@ export function scanDocument(
   const text = doc.getText()
   const foundDiagnostics: vscode.Diagnostic[] = []
 
-  // Regex to detect object-style defineProps
-  const regex = /(?:\b(?:const|let|var)\s*(?:\{[\s\S]*?\}|\w+)\s*=\s*)?defineProps\s*\(/g
   let match: RegExpExecArray | null
 
-  while ((match = regex.exec(text))) {
+  while ((match = definePropsRegex.exec(text))) {
     const start = match.index
     const openParen = text.indexOf('(', start + match[0].length - 1)
     if (openParen < 0) continue
@@ -44,8 +43,7 @@ export function scanDocument(
     const range = new vscode.Range(startPos, endPos)
 
     // Only flag inside TypeScript `<script setup>`
-    const isScriptTs = /<script\b(?=[^>]*\bsetup\b)(?=[^>]*\blang=["']ts["'])/.test(text)
-    if (!isScriptTs) continue
+    if (!isScriptSetupTs(text)) continue
 
     const diagnostic = new vscode.Diagnostic(
       range,
