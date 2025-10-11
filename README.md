@@ -9,9 +9,6 @@ Convert Vue `defineProps()` object-style definitions into **type-safe, destructu
 > - Certain nested default values or unusual object syntax
 > Please report any issues on the [GitHub repository](https://github.com/arashsheyda/vue-prop-konverter/issues).
 
-
----
-
 ## Features
 
 - Converts **object-style `defineProps`** to TypeScript generic + destructuring syntax
@@ -20,10 +17,8 @@ Convert Vue `defineProps()` object-style definitions into **type-safe, destructu
   - Default values
   - Required props
   - `PropType<T>` for arrays, objects, or custom types
-- Works only in `<script setup lang="ts">` blocks
+- Works only in typescript blocks (`<script lang="ts">`)
 - QuickFix via the VS Code **lightbulb**
-
----
 
 ## Demo
 
@@ -96,8 +91,6 @@ pnpm run build
 
 Then press `F5` in VS Code to open a Development Extension Host with the extension loaded.
 
----
-
 ## Usage
 
 1. Open a .vue file with <script setup lang="ts">
@@ -106,21 +99,15 @@ Then press `F5` in VS Code to open a Development Extension Host with the extensi
 4. Select "Replace defineProps() with type-safe variant and update usage"
 5. The props will be converted automatically
 
----
-
 ## Requirements
 
 - VS Code 1.90+
 - Vue 3 with <script setup lang="ts">
 - TypeScript installed in your project
 
----
-
 ## Extension Settings
 
 No additional settings required — works out of the box.
-
----
 
 ## Contributing
 
@@ -128,8 +115,6 @@ No additional settings required — works out of the box.
 2. Create a branch (git checkout -b feature/my-feature)
 3. Make your changes & run pnpm lint and pnpm build
 4. Submit a pull request
-
----
 
 ## License
 
