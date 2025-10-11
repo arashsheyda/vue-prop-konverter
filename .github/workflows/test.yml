@@ -10,34 +10,21 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
 
-      - name: Install dependencies
-        run: |
-          npm install -g pnpm
-          pnpm install
-
-      - name: Get changed files
-        id: changed
-        run: |
-          echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
-          git fetch origin ${{ github.event.pull_request.base.ref }}
-          git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD >> changed.txt
-          cat changed.txt >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: true
 
       - name: Run tests
-        id: run-tests
-        run: |
-          # Run tests normally, or filter by changed files
-          pnpm test --reporter=verbose
-        continue-on-error: true
+        run: pnpm test --reporter=verbose
 
       - name: Post test results to PR
         if: always()
@@ -46,4 +33,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           header: '🧪 Test Results'
           message: |
-            ${{ steps.run-tests.outcome }}
+            ${{ job.status }}
