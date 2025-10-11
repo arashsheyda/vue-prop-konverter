@@ -37,23 +37,28 @@
   },
   "scripts": {
     "build": "tsc -p .",
-    "build:code": "tsc -p . && vsce package",
     "watch": "tsc -watch -p .",
     "test": "vitest",
+    "publish": "pnpm run test && pnpm run build",
     "test:open": "vitest --ui",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix"
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.6",
     "@types/node": "^24.7.1",
     "@types/vscode": "^1.90.0",
     "@vitest/ui": "3.2.4",
     "eslint": "^9.37.0",
     "globals": "^16.4.0",
     "jiti": "^2.6.1",
+    "semantic-release": "^24.2.9",
     "typescript": "^5.4.0",
     "typescript-eslint": "^8.46.0",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "vsce": "^2.15.0"
   }
 }
