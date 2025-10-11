@@ -16,4 +16,7 @@ export interface PropDefinition {
 
   /** Validator function expression (if any) */
   validator?: string
+
+  /** Any comments associated with the prop */
+  comment?: string
 }

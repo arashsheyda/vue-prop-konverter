@@ -203,68 +203,140 @@ export function findFirstTopLevelBrace(text: string, from: number, to: number): 
 }
 
 /**
- * Parses a prop object body into name/value pairs.
+ * Parses a prop object body into name/value/comment triples.
  *
- * @param body - The content inside the defineProps({ ... })
- * @returns Array of props with name and value as string
+ * Preserves:
+ * - Single-line `//` comments
+ * - Multi-line `/* ... *\/` and JSDoc `/** ... *\/` comments
+ * - Inline comments after properties
+ *
+ * @param body - The content inside defineProps({ ... })
+ * @returns Array of props with name and value as string and optional comment
  */
 export function extractProps(body: string) {
-  const out: { name: string; value: string }[] = []
+  const out: { name: string; value: string; comment?: string }[] = []
   let i = 0
   const n = body.length
 
   while (i < n) {
+    // Skip whitespace and commas
+    while (i < n && /[\s,]/.test(body[i])) i++
+    if (i >= n) break
+
+    // Gather any comments before this prop
+    const commentLines: string[] = []
+    let foundComment = true
+
+    // Capture consecutive comment blocks
+    while (foundComment) {
+      foundComment = false
+
+      // Single-line comment
+      if (body.slice(i, i + 2) === '//') {
+        const end = body.indexOf('\n', i)
+        const comment = body.slice(i, end >= 0 ? end : n).trim()
+        commentLines.push(comment)
+        i = end >= 0 ? end + 1 : n
+        foundComment = true
+        continue
+      }
+
+      // Multi-line comment
+      if (body.slice(i, i + 2) === '/*') {
+        const end = body.indexOf('*/', i)
+        if (end !== -1) {
+          const comment = body.slice(i, end + 2).trim()
+          commentLines.push(comment)
+          i = end + 2
+          foundComment = true
+          continue
+        } else {
+          i = n
+          break
+        }
+      }
+    }
+
+    // Skip any whitespace after comments
     while (i < n && /\s/.test(body[i])) i++
     if (i >= n) break
 
-    // Extract prop name (supports quoted keys)
     let name = ''
-    if ('\'"`'.includes(body[i])) {
+    // eslint-disable-next-line quotes
+    if (`"'`.includes(body[i])) {
       const quote = body[i++]
-      let sb = quote
-      while (i < n) {
-        const ch = body[i++]
-        sb += ch
-        if (ch === '\\' && i < n) sb += body[i++]
-        if (ch === quote) break
+      const start = i
+      while (i < n && body[i] !== quote) {
+        if (body[i] === '\\') i++ // skip escape
+        i++
       }
-      name = sb
+      name = body.slice(start, i)
+      i++ // skip closing quote
     } else {
       const start = i
       while (i < n && /[A-Za-z0-9_$]/.test(body[i])) i++
-      name = body.slice(start, i).trim()
+      name = body.slice(start, i)
     }
 
+    // Skip whitespace
     while (i < n && /\s/.test(body[i])) i++
     if (body[i] !== ':') {
-      i++
+      // Not a prop (maybe spread or malformed), skip line
+      const nl = body.indexOf('\n', i)
+      i = nl === -1 ? n : nl + 1
       continue
     }
-    i++
 
-    // Extract prop value
+    i++ // skip ':'
+
+    // Extract value block
     const valueStart = i
-    let vInString: string | null = null
-    let vDepth = 0
+    let depth = 0
+    let inString: string | null = null
 
     while (i < n) {
       const ch = body[i]
 
-      if (vInString) {
-        if (ch === '\\' && i + 1 < n) { i += 2; continue }
-        if (ch === vInString) { vInString = null; i++; continue }
-        i++; continue
+      if (inString) {
+        if (ch === '\\' && i + 1 < n) i++
+        else if (ch === inString) inString = null
       } else {
-        if ('\'"`'.includes(ch)) { vInString = ch; i++; continue }
-        if ('{[('.includes(ch)) { vDepth++; i++; continue }
-        if ('}])'.includes(ch)) { if (vDepth > 0) vDepth--; i++; continue }
-        if (ch === ',' && vDepth === 0) break
-        i++
+        // eslint-disable-next-line quotes
+        if (`"'`.includes(ch)) inString = ch
+        else if ('{[('.includes(ch)) depth++
+        else if ('}])'.includes(ch)) depth = Math.max(0, depth - 1)
+        else if (depth === 0) {
+          // Inline comments
+          if (body.slice(i, i + 2) === '//') {
+            const end = body.indexOf('\n', i)
+            const comment = body.slice(i, end >= 0 ? end : n).trim()
+            commentLines.push(comment)
+            i = end >= 0 ? end + 1 : n
+            continue
+          } else if (body.slice(i, i + 2) === '/*') {
+            const end = body.indexOf('*/', i)
+            if (end === -1) break
+            const comment = body.slice(i, end + 2).trim()
+            commentLines.push(comment)
+            i = end + 2
+            continue
+          }
+
+          // End of this prop (top-level comma)
+          if (ch === ',') break
+        }
       }
+      i++
     }
 
     const value = body.slice(valueStart, i).trim()
-    out.push({ name: name.trim(), value })
+
+    // Merge all comments
+    const comment = commentLines.length ? commentLines.join('\n') : undefined
+
+    out.push({ name, value, comment })
+
+    // Skip comma
     if (i < n && body[i] === ',') i++
   }
 

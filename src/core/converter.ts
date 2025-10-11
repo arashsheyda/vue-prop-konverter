@@ -53,13 +53,23 @@ export function convertProps(source: string): string {
       type,
       required,
       defaultValue,
+      comment: p.comment,
     })
   }
 
   // Build TypeScript type block for defineProps<{}>()
   const tsLines = propsParsed.map(p => {
     const isOptional = p.defaultValue !== undefined || p.required === false
-    return `${p.name}${isOptional ? '?' : ''}: ${p.type}`
+    const line = `${p.name}${isOptional ? '?' : ''}: ${p.type}`
+
+    if (p.comment) {
+      const lines = p.comment.split('\n')
+      const formattedComment = lines
+        .map((line, idx) => (idx === 0 ? line.trimStart() : `  ${line.trim()}`)) // first line not extra indented
+        .join('\n')
+      return `${formattedComment}\n  ${line}` // prop line stays 2 spaces
+    }
+    return line
   })
 
   // Build destructured assignment parts with defaults
