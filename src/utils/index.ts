@@ -219,124 +219,107 @@ export function extractProps(body: string) {
   const n = body.length
 
   while (i < n) {
-    // Skip whitespace and commas
-    while (i < n && /[\s,]/.test(body[i])) i++
+    // Skip whitespace
+    while (i < n && /\s/.test(body[i])) i++
     if (i >= n) break
 
-    // Gather any comments before this prop
+    // Capture comments before prop (multi-line)
     const commentLines: string[] = []
-    let foundComment = true
-
-    // Capture consecutive comment blocks
-    while (foundComment) {
-      foundComment = false
-
-      // Single-line comment
-      if (body.slice(i, i + 2) === '//') {
+    while (i < n) {
+      const nextTwo = body.slice(i, i + 2)
+      if (nextTwo === '//') {
         const end = body.indexOf('\n', i)
         const comment = body.slice(i, end >= 0 ? end : n).trim()
         commentLines.push(comment)
         i = end >= 0 ? end + 1 : n
-        foundComment = true
-        continue
-      }
-
-      // Multi-line comment
-      if (body.slice(i, i + 2) === '/*') {
+      } else if (nextTwo === '/*') {
         const end = body.indexOf('*/', i)
         if (end !== -1) {
           const comment = body.slice(i, end + 2).trim()
           commentLines.push(comment)
           i = end + 2
-          foundComment = true
-          continue
         } else {
           i = n
           break
         }
+      } else if (/^\s*$/.test(body.slice(i, i + 1))) {
+        i++ // skip blank lines
+      } else {
+        break
       }
     }
 
-    // Skip any whitespace after comments
-    while (i < n && /\s/.test(body[i])) i++
     if (i >= n) break
 
+    // --- Extract prop name ---
     let name = ''
-    // eslint-disable-next-line quotes
-    if (`"'`.includes(body[i])) {
+    if ('\'"`'.includes(body[i])) {
       const quote = body[i++]
-      const start = i
-      while (i < n && body[i] !== quote) {
-        if (body[i] === '\\') i++ // skip escape
-        i++
+      let sb = quote
+      while (i < n) {
+        const ch = body[i++]
+        sb += ch
+        if (ch === '\\' && i < n) sb += body[i++]
+        if (ch === quote) break
       }
-      name = body.slice(start, i)
-      i++ // skip closing quote
+      name = sb
     } else {
       const start = i
       while (i < n && /[A-Za-z0-9_$]/.test(body[i])) i++
-      name = body.slice(start, i)
+      name = body.slice(start, i).trim()
     }
 
-    // Skip whitespace
+    // Skip to colon
     while (i < n && /\s/.test(body[i])) i++
     if (body[i] !== ':') {
-      // Not a prop (maybe spread or malformed), skip line
-      const nl = body.indexOf('\n', i)
-      i = nl === -1 ? n : nl + 1
+      i++
       continue
     }
+    i++
 
-    i++ // skip ':'
-
-    // Extract value block
+    // --- Extract prop value ---
     const valueStart = i
-    let depth = 0
-    let inString: string | null = null
+    let vInString: string | null = null
+    let vDepth = 0
 
     while (i < n) {
       const ch = body[i]
 
-      if (inString) {
-        if (ch === '\\' && i + 1 < n) i++
-        else if (ch === inString) inString = null
+      if (vInString) {
+        if (ch === '\\' && i + 1 < n) { i += 2; continue }
+        if (ch === vInString) { vInString = null; i++; continue }
+        i++; continue
       } else {
-        // eslint-disable-next-line quotes
-        if (`"'`.includes(ch)) inString = ch
-        else if ('{[('.includes(ch)) depth++
-        else if ('}])'.includes(ch)) depth = Math.max(0, depth - 1)
-        else if (depth === 0) {
-          // Inline comments
-          if (body.slice(i, i + 2) === '//') {
-            const end = body.indexOf('\n', i)
-            const comment = body.slice(i, end >= 0 ? end : n).trim()
-            commentLines.push(comment)
-            i = end >= 0 ? end + 1 : n
-            continue
-          } else if (body.slice(i, i + 2) === '/*') {
-            const end = body.indexOf('*/', i)
-            if (end === -1) break
-            const comment = body.slice(i, end + 2).trim()
-            commentLines.push(comment)
+        if ('\'"`'.includes(ch)) { vInString = ch; i++; continue }
+        if ('{[('.includes(ch)) { vDepth++; i++; continue }
+        if ('}])'.includes(ch)) { if (vDepth > 0) vDepth--; i++; continue }
+
+        // Inline comments
+        if (vDepth === 0 && body.slice(i, i + 2) === '//') {
+          const end = body.indexOf('\n', i)
+          const inline = body.slice(i, end >= 0 ? end : n).trim()
+          commentLines.push(inline)
+          i = end >= 0 ? end + 1 : n
+          continue
+        } else if (vDepth === 0 && body.slice(i, i + 2) === '/*') {
+          const end = body.indexOf('*/', i)
+          if (end !== -1) {
+            const inline = body.slice(i, end + 2).trim()
+            commentLines.push(inline)
             i = end + 2
             continue
           }
-
-          // End of this prop (top-level comma)
-          if (ch === ',') break
         }
+
+        if (ch === ',' && vDepth === 0) break
+        i++
       }
-      i++
     }
 
     const value = body.slice(valueStart, i).trim()
-
-    // Merge all comments
     const comment = commentLines.length ? commentLines.join('\n') : undefined
 
-    out.push({ name, value, comment })
-
-    // Skip comma
+    out.push({ name: name.trim(), value, comment })
     if (i < n && body[i] === ',') i++
   }
 
