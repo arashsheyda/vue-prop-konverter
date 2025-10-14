@@ -28,11 +28,11 @@ jobs:
           version: 9
           run_install: true
 
-      - name: Run semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+      # - name: Run semantic-release
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: npx semantic-release
 
-      - name: Publish to VS Code Marketplace
-        if: success()
-        run: npx vsce publish -p ${{ secrets.VSCE_TOKEN }}
+      # - name: Publish to VS Code Marketplace
+      #   if: success()
+      #   run: npx vsce publish -p ${{ secrets.VSCE_TOKEN }}
