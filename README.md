@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./resources/icon.png" width="120" alt="Vue Prop Konverter logo" />
+  <img src="./resources/icon.png" width="377" alt="Vue Prop Konverter logo" />
 </p>
 
 <h1 align="center">Vue Prop Konverter</h1>
