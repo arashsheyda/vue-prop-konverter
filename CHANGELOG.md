@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/arashsheyda/vue-prop-konverter/compare/v1.0.0...v1.1.0) (2025-10-14)
+
+
+### Features
+
+* update icon ([ab4a294](https://github.com/arashsheyda/vue-prop-konverter/commit/ab4a29489bf1bd11049434bb48f68deda4a1702a))
+
 # 1.0.0 (2025-10-11)
 
 
