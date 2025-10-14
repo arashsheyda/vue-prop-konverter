@@ -99,16 +99,16 @@ Then press `F5` in VS Code to open a Development Extension Host with the extensi
 
 ## Usage
 
-1. Open a .vue file with <script setup lang="ts">
-2. Place your cursor over a defineProps() object-style declaration
-3. Click the lightbulb or press Ctrl+. / Cmd+.
-4. Select "Replace defineProps() with type-safe variant and update usage"
+1. Open a `.vue` file with `<script setup lang="ts">`
+2. Place your cursor over a `defineProps()` object-style declaration
+3. Click the lightbulb or press `Ctrl` + `.` / `Cmd` + `.`
+4. Select `Replace defineProps() with type-safe variant and update usage`
 5. The props will be converted automatically
 
 ## Requirements
 
 - VS Code 1.90+
-- Vue 3 with <script setup lang="ts">
+- Vue 3 with `<script setup lang="ts">`
 - TypeScript installed in your project
 
 ## Extension Settings
@@ -118,9 +118,9 @@ No additional settings required — works out of the box.
 ## Contributing
 
 1. Fork the repo
-2. Create a branch (git checkout -b feature/my-feature)
-3. Make your changes & run pnpm lint and pnpm build
-4. Submit a pull request
+2. Create a branch (`git checkout -b feature/my-feature`)
+3. Make your changes & run `pnpm lint` and `pnpm build`
+4. Submit a [pull request](https://github.com/arashsheyda/vue-prop-konverter/pulls)
 
 ## License
 
