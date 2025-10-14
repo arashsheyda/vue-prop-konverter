@@ -1,9 +1,15 @@
-# Vue Prop Konverter
+<p align="center">
+  <img src="./resources/icon.png" width="120" alt="Vue Prop Konverter logo" />
+</p>
 
-Convert Vue `defineProps()` object-style definitions into **type-safe, destructured TypeScript** automatically in VS Code.
+<h1 align="center">Vue Prop Konverter</h1>
 
-> ⚠️ **Beta**  
-> This extension is currently in beta. Some features may not work perfectly. For example:
+Convert Vue <code>defineProps()</code> object-style definitions into <b>type-safe, destructured TypeScript</b> automatically in VS Code.
+
+---
+
+> [!WARNING]
+> This extension is currently in **beta**. Some features may not work perfectly. For example:
 > - Callback props may not be correctly inferred
 > - Extremely dynamic or computed prop definitions
 > - Certain nested default values or unusual object syntax
