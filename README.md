@@ -4,6 +4,15 @@
 
 <h1 align="center">Vue Prop Konverter</h1>
 
+<p align="center">
+  <a href="https://marketplace.visualstudio.com/items?itemName=arashsheyda.vue-prop-konverter">
+    <img src="https://img.shields.io/visual-studio-marketplace/v/arashsheyda.vue-prop-konverter?color=42b883&label=VS%20Code%20Marketplace&logo=visual-studio-code" alt="VS Code Marketplace Version" />
+  </a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=arashsheyda.vue-prop-konverter">
+    <img src="https://img.shields.io/badge/Install%20on-VS%20Code-007ACC?logo=visual-studio-code" alt="Install on VS Code" />
+  </a>
+</p>
+
 Convert Vue <code>defineProps()</code> object-style definitions into <b>type-safe, destructured TypeScript</b> automatically in VS Code.
 
 ---
