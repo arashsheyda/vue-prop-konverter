@@ -83,12 +83,20 @@ export function extractDefaultValue(value: string): string | undefined {
   let def = result.trim()
   if (!def) return undefined
 
-  // Clean arrow functions
+  // Handle arrow functions
   if (def.startsWith('() =>')) {
     def = def.replace(/^\(\)\s*=>\s*/, '').trim()
-    if (def.startsWith('{') || def.startsWith('[')) def = `(${def})`
-  } else if (def.startsWith('{') || def.startsWith('[')) {
-    def = `(${def})`
+    // Only wrap if returning object without parentheses
+    if (/^\{[\s\S]*\}$/.test(def) || /^\[[\s\S]*\]$/.test(def)) {
+      // no need to wrap — it's already a valid literal
+    } else if (!def.startsWith('(')) {
+      def = `(${def})`
+    }
+  }
+
+  // Remove unnecessary wrapping parentheses around literals like ({}) or ([])
+  if (/^\(\s*(\{|\[)/.test(def) && /(\}|\])\s*\)$/.test(def)) {
+    def = def.replace(/^\(\s*/, '').replace(/\s*\)$/, '')
   }
 
   return def
