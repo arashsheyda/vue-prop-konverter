@@ -34,8 +34,8 @@ export const propFixProvider: vscode.CodeActionProvider = {
       const oldCode = document.getText(diagnostic.range)
       const replacement = convertProps(oldCode)
 
-      // Extract prop names from the converted code
-      const propsMatch = replacement.match(/\{\s*([\s\S]*?)\s*\}\s*=\s*defineProps/)
+      // Extract prop names from the replacement code
+      const propsMatch = replacement.match(/\{\s*([\s\S]*?)\s*\}\s*=/)
       const propsUsed = new Set<string>()
 
       if (propsMatch && propsMatch[1]) {

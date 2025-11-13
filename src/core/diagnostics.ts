@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
-import { findMatching } from '../utils'
-import { isScriptSetupTs, definePropsRegex } from '../shared'
+import { parse } from '@vue/compiler-sfc'
+import { isScriptSetupTs } from '../shared'
+import { findObjectDefineProps } from './converter'
 
 /**
  * Creates a VSCode diagnostic collection for this extension.
@@ -18,32 +19,25 @@ export function createDiagnosticCollection(): vscode.DiagnosticCollection {
  * @param doc The text document to scan
  * @param diagnostics The diagnostic collection to update
  */
-export function scanDocument(
-  doc: vscode.TextDocument,
-  diagnostics: vscode.DiagnosticCollection,
-) {
+export function scanDocument(doc: vscode.TextDocument, diagnostics: vscode.DiagnosticCollection): void {
   if (doc.languageId !== 'vue') return
 
   const text = doc.getText()
+  const sfc = parse(text)
+  const scriptSetup = sfc.descriptor.scriptSetup
+
+  if (!scriptSetup || !isScriptSetupTs(text)) return
+
+  const nodes = findObjectDefineProps(scriptSetup.content)
   const foundDiagnostics: vscode.Diagnostic[] = []
 
-  let match: RegExpExecArray | null
-
-  while ((match = definePropsRegex.exec(text))) {
-    const start = match.index
-    const openParen = text.indexOf('(', start + match[0].length - 1)
-    if (openParen < 0) continue
-
-    const closeParen = findMatching(text, openParen, '(', ')')
-    if (closeParen < 0) continue
-
-    // Map string indices to VSCode positions
-    const startPos = doc.positionAt(start)
-    const endPos = doc.positionAt(closeParen + 1)
-    const range = new vscode.Range(startPos, endPos)
-
-    // Only flag inside TypeScript `<script setup>`
-    if (!isScriptSetupTs(text)) continue
+    for (const node of nodes) {
+    const startOffset = scriptSetup.loc.start.offset + (node.start ?? 0)
+    const endOffset = scriptSetup.loc.start.offset + (node.end ?? 0)
+    const range = new vscode.Range(
+      doc.positionAt(startOffset),
+      doc.positionAt(endOffset),
+    )
 
     const diagnostic = new vscode.Diagnostic(
       range,
