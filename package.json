@@ -39,8 +39,8 @@
     "build": "tsc -p .",
     "watch": "tsc -watch -p .",
     "test": "vitest",
+    "test:ui": "vitest --ui",
     "publish": "pnpm run test && pnpm run build",
-    "test:open": "vitest --ui",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix"
   },
