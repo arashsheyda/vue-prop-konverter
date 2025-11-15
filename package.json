@@ -1,7 +1,7 @@
 {
   "name": "vue-prop-konverter",
   "displayName": "Vue Prop Konverter",
-  "icon": "resources/icon.png",
+  "icon": "assets/icon.png",
   "description": "Converts Vue defineProps({}) object syntax to TypeScript-safe defineProps<>() syntax with destructuring.",
   "publisher": "arashsheyda",
   "version": "0.0.11",
