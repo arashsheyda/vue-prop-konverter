@@ -5,28 +5,26 @@ on:
     branches:
       - main
 
+permissions:
+  issues: write
+  contents: write
+  pull-requests: write
+
 jobs:
+  run-tests:
+    name: Tests
+    users: ./.github/workflows/test.yml
+
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-          run_install: true
+      - name: Setup environment
+        uses: ./.github/actions/setup-env
 
       # - name: Run semantic-release
       #   env:

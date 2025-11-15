@@ -9,28 +9,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
         with:
-          node-version: 20
+          fetch-depth: 0
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup environment
+        uses: ./.github/actions/setup-env
         with:
-          version: 9
-          run_install: true
+          force-install: true
+          save-cache: true
 
       - name: Run tests
         run: pnpm test --reporter=verbose
-
-      - name: Post test results to PR
-        if: always()
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          header: '🧪 Test Results'
-          message: |
-            ${{ job.status }}
