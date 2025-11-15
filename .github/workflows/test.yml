@@ -16,6 +16,9 @@ jobs:
 
       - name: Setup environment
         uses: ./.github/actions/setup-env
+        with:
+          force-install: true
+          save-cache: true
 
       - name: Run tests
         run: pnpm test --reporter=verbose
