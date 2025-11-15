@@ -3,13 +3,16 @@ import { convertProps } from '../core/converter'
 import { isScriptSetupTs } from '../shared'
 
 /**
- * Provides quick fixes for Vue defineProps conversion.
- * Converts object-style defineProps({}) to type-safe defineProps<{}>()
- * and replaces props.<name> usages with direct variable references.
+ * CodeActionProvider for converting object-style `defineProps({})`
+ * into type-safe generic `defineProps<T>()` and cleaning up
+ * `props.xxx` usages throughout the file.
+ *
+ * This provider is triggered when diagnostics detect outdated
+ * defineProps syntax inside a <script setup lang="ts"> block.
  */
 export const propFixProvider: vscode.CodeActionProvider = {
   /**
-   * Provide code actions (quick fixes) for the given diagnostics.
+   * Provide quick-fix code actions for the given diagnostics.
    * 
    * @param document The document where the command was invoked
    * @param range The range where the command was invoked
@@ -24,15 +27,19 @@ export const propFixProvider: vscode.CodeActionProvider = {
     const actions: vscode.CodeAction[] = []
 
     for (const diagnostic of context.diagnostics) {
+      // Skip all diagnostics except the one attached to props.TypeSyntax
       if (diagnostic.code !== 'props.TypeSyntax') continue
 
       const fullText = document.getText()
       
-      // Only flag inside TypeScript `<script setup>`
+      // Only run inside <script setup lang="ts"> blocks
       if (!isScriptSetupTs(fullText)) continue
 
       const oldCode = document.getText(diagnostic.range)
       const replacement = convertProps(oldCode)
+
+      // Guard: If conversion failed or returned invalid code, skip
+      if (!replacement || typeof replacement !== 'string') continue
 
       // Extract prop names from the replacement code
       const propsMatch = replacement.match(/\{\s*([\s\S]*?)\s*\}\s*=/)
@@ -52,15 +59,15 @@ export const propFixProvider: vscode.CodeActionProvider = {
       fix.diagnostics = [diagnostic]
       fix.edit = new vscode.WorkspaceEdit()
 
-      // 1️⃣ Replace the old defineProps with the type-safe version
+      // Replace the old defineProps call
       fix.edit.replace(document.uri, diagnostic.range, replacement)
 
-      // 2️⃣ Replace `props.<name>` usages in the document with direct variable references
+      // Replace all `props.<name>` usages in the document with direct variable references
       const originalText = document.getText()
       for (const prop of propsUsed) {
-        const re = new RegExp(`\\bprops\\.${prop}\\b`, 'g')
+        const regex = new RegExp(`\\bprops\\.${prop}\\b`, 'g')
         let match: RegExpExecArray | null
-        while ((match = re.exec(originalText))) {
+        while ((match = regex.exec(originalText))) {
           fix.edit.replace(
             document.uri,
             new vscode.Range(

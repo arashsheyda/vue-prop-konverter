@@ -4,7 +4,7 @@ import { isScriptSetupTs } from '../shared'
 import { findObjectDefineProps } from './converter'
 
 /**
- * Creates a VSCode diagnostic collection for this extension.
+ * Creates a VSCode diagnostic collection for for detecting outdated object-style defineProps usage inside Vue SFCs
  * 
  * @returns A DiagnosticCollection instance
  */
@@ -26,14 +26,24 @@ export function scanDocument(doc: vscode.TextDocument, diagnostics: vscode.Diagn
   const sfc = parse(text)
   const scriptSetup = sfc.descriptor.scriptSetup
 
-  if (!scriptSetup || !isScriptSetupTs(text)) return
+  // Only process <script setup lang="ts">
+  if (!scriptSetup || !isScriptSetupTs(text)) {
+    diagnostics.set(doc.uri, [])
+    return
+  }
 
+  // Find all defineProps({}) object-style occurrences in the script content
   const nodes = findObjectDefineProps(scriptSetup.content)
   const foundDiagnostics: vscode.Diagnostic[] = []
 
-    for (const node of nodes) {
+  for (const node of nodes) {
+    // skip malformed nodes
+    if (node.start == null || node.end == null) continue
+
+    // offsets inside scriptSetup.content must be shifted by scriptSetup.loc.start.offset
     const startOffset = scriptSetup.loc.start.offset + (node.start ?? 0)
     const endOffset = scriptSetup.loc.start.offset + (node.end ?? 0)
+
     const range = new vscode.Range(
       doc.positionAt(startOffset),
       doc.positionAt(endOffset),
@@ -44,10 +54,13 @@ export function scanDocument(doc: vscode.TextDocument, diagnostics: vscode.Diagn
       'Object-style defineProps() used. Convert to type-safe variant.',
       vscode.DiagnosticSeverity.Information,
     )
+
+    // Used by the CodeActionProvider to trigger fixes
     diagnostic.code = 'props.TypeSyntax'
+
     foundDiagnostics.push(diagnostic)
   }
 
-  // Update diagnostics for the document
+  // Update all diagnostics for this document
   diagnostics.set(doc.uri, foundDiagnostics)
 }
