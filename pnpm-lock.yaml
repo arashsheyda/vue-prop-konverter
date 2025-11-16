@@ -7,7 +7,7 @@ settings:
 importers:
 
   .:
-    devDependencies:
+    dependencies:
       '@babel/generator':
         specifier: ^7.28.5
         version: 7.28.5
@@ -20,6 +20,10 @@ importers:
       '@babel/types':
         specifier: ^7.28.5
         version: 7.28.5
+      '@vue/compiler-sfc':
+        specifier: ^3.5.24
+        version: 3.5.24
+    devDependencies:
       '@eslint/js':
         specifier: ^9.39.1
         version: 9.39.1
@@ -50,9 +54,6 @@ importers:
       '@vscode/vsce':
         specifier: ^3.7.0
         version: 3.7.0
-      '@vue/compiler-sfc':
-        specifier: ^3.5.24
-        version: 3.5.24
       eslint:
         specifier: ^9.39.1
         version: 9.39.1(jiti@2.6.1)

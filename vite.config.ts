@@ -21,10 +21,6 @@ export default defineConfig({
       external: [
         'vscode', // VS Code provides this at runtime
         /^node:/, // Node.js built-in modules with `node:*` prefix
-        '@babel/parser',
-        '@babel/traverse',
-        '@babel/generator',
-        '@babel/types',
       ],
     },
   },
