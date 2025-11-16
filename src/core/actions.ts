@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
-import { convertProps } from '../core/converter'
-import { isScriptSetupTs } from '../shared'
+import { convertProps } from '~/core/converter'
+import { isScriptSetupTs } from '~/shared'
 
 /**
  * CodeActionProvider for converting object-style `defineProps({})`

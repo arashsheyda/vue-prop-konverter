@@ -4,15 +4,26 @@
     "module": "commonjs",
     "lib": ["esnext"],
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
-    "types": ["vscode", "node"],
+    "allowImportingTsExtensions": false,
+    "paths": {
+      "~/*": [
+        "./src/*"
+      ]
+    },
+    "types": ["vscode", "node", "vite/client"]
   },
-  "types": ["vite/client", "vue"],
-  "include": ["src"],
-  "exclude": ["node_modules", ".vscode-test"]
+  "include": [
+    "src",
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+    ".vscode-test"
+  ]
 }
