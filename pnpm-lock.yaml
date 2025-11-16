@@ -53,9 +53,6 @@ importers:
       eslint:
         specifier: ^9.39.1
         version: 9.39.1(jiti@2.6.1)
-      jiti:
-        specifier: ^2.6.1
-        version: 2.6.1
       semantic-release:
         specifier: ^25.0.0
         version: 25.0.0(typescript@5.9.3)
@@ -3477,7 +3474,8 @@ snapshots:
 
   java-properties@1.0.2: {}
 
-  jiti@2.6.1: {}
+  jiti@2.6.1:
+    optional: true
 
   js-tokens@4.0.0: {}
 
