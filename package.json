@@ -4,7 +4,7 @@
   "icon": "assets/icon.png",
   "description": "Converts Vue defineProps({}) object syntax to TypeScript-safe defineProps<>() syntax with destructuring.",
   "publisher": "arashsheyda",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "repository": {
     "url": "https://github.com/arashsheyda/vue-prop-konverter",
     "type": "git"
@@ -13,7 +13,7 @@
   "engines": {
     "node": ">=22.20.0",
     "pnpm": ">=10.18.3",
-    "vscode": ">=1.105.0"
+    "vscode": ">=1.106.0"
   },
   "categories": [
     "Programming Languages"
@@ -61,7 +61,7 @@
     "@types/babel__generator": "^7.27.0",
     "@types/babel__traverse": "^7.28.0",
     "@types/node": "^24.10.1",
-    "@types/vscode": "^1.105.0",
+    "@types/vscode": "^1.106.0",
     "@vitest/ui": "4.0.9",
     "@vscode/vsce": "^3.7.0",
     "@vue/compiler-sfc": "^3.5.24",

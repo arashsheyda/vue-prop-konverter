@@ -42,7 +42,7 @@ importers:
         specifier: ^24.10.1
         version: 24.10.1
       '@types/vscode':
-        specifier: ^1.105.0
+        specifier: ^1.106.0
         version: 1.106.0
       '@vitest/ui':
         specifier: 4.0.9
