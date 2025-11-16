@@ -11,11 +11,6 @@
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "allowImportingTsExtensions": false,
-    "paths": {
-      "~/*": [
-        "./src/*"
-      ]
-    },
     "types": ["vscode", "node", "vite/client"]
   },
   "include": ["src"],

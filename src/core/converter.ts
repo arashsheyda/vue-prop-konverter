@@ -2,7 +2,7 @@ import * as babel from '@babel/parser'
 import traverse from '@babel/traverse'
 import generate from '@babel/generator'
 import * as t from '@babel/types'
-import type { PropDefinition } from '~/types'
+import type { PropDefinition } from '../types'
 import type { NodePath } from '@babel/traverse'
 
 /**

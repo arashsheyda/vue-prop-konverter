@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
-import { createDiagnosticCollection, scanDocument } from '~/core/diagnostics'
-import { propFixProvider } from '~/core/actions'
+import { createDiagnosticCollection, scanDocument } from './core/diagnostics'
+import { propFixProvider } from './core/actions'
 
 /**
  * This method is called when the extension is activated.

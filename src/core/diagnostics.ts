@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import { parse } from '@vue/compiler-sfc'
-import { isScriptSetupTs } from '~/shared'
-import { findObjectDefineProps } from '~/core/converter'
+import { isScriptSetupTs } from '../shared'
+import { findObjectDefineProps } from '../core/converter'
 
 /**
  * Creates a VSCode diagnostic collection for for detecting outdated object-style defineProps usage inside Vue SFCs
