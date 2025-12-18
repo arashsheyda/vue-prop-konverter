@@ -58,7 +58,7 @@
     "@types/babel__traverse": "^7.28.0",
     "@types/node": "^24.10.1",
     "@types/vscode": "^1.106.0",
-    "@vitest/ui": "4.0.9",
+    "@vitest/ui": "4.0.16",
     "@vscode/vsce": "^3.7.0",
     "eslint": "^9.39.1",
     "semantic-release": "^25.0.0",
