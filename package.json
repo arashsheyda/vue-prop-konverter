@@ -41,11 +41,11 @@
   "scripts": {
     "dev": "vite build --watch --mode development",
     "watch": "vite build --watch",
-    "build": "vite build --mode production && tsc -p tsconfig.json",
+    "build": "vite build --mode production",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "package": "pnpm exec vsce package",
-    "publish": "pnpm exec vsce publish",
+    "package": "pnpm exec vsce package --no-dependencies",
+    "publish": "pnpm exec vsce publish --no-dependencies",
     "lint": "eslint",
     "lint:fix": "eslint --fix"
   },
