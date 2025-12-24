@@ -1,0 +1,42 @@
+# Ignore source files
+src/
+tests/
+*.test.ts
+*.spec.ts
+
+# Build artifacts
+*.map
+*.ts
+!dist/**/*.d.ts
+
+# Config files
+tsconfig.json
+vite.config.ts
+eslint.config.mts
+vitest.config.ts
+renovate.json
+
+# Development files
+.vscode/
+.vscode-test/
+node_modules/
+.git/
+.gitignore
+.eslintrc*
+.prettierrc*
+.editorconfig
+
+# Documentation
+CHANGELOG.md
+README.md
+LICENSE
+
+# Lock files and package managers
+pnpm-lock.yaml
+pnpm-workspace.yaml
+yarn.lock
+package-lock.json
+
+# Misc
+.DS_Store
+*.log
