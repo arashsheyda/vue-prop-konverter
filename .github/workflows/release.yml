@@ -4,33 +4,104 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'package.json'
 
 permissions:
-  issues: write
   contents: write
-  pull-requests: write
 
 jobs:
-  run-tests:
-    name: Tests
-    users: ./.github/workflows/test.yml
-
-  release:
+  check-version:
     runs-on: ubuntu-latest
+    outputs:
+      version-changed: ${{ steps.check.outputs.changed }}
+      new-version: ${{ steps.check.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      - name: Check if version changed
+        id: check
+        run: |
+          CURRENT_VERSION=$(jq -r .version package.json)
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Get the previous commit's package.json version
+          git show HEAD~1:package.json > previous-package.json 2>/dev/null || echo '{"version":"0.0.0"}' > previous-package.json
+          PREVIOUS_VERSION=$(jq -r .version previous-package.json)
+          echo "Previous version: $PREVIOUS_VERSION"
+          
+          if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
+            echo "Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION"
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "Version unchanged"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+  test:
+    needs: check-version
+    if: needs.check-version.outputs.version-changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup environment
         uses: ./.github/actions/setup-env
+        with:
+          force-install: true
 
-      # - name: Run semantic-release
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: npx semantic-release
+      - name: Run tests
+        run: pnpm test --reporter=verbose
 
-      # - name: Publish to VS Code Marketplace
-      #   if: success()
-      #   run: npx vsce publish -p ${{ secrets.VSCE_TOKEN }}
+  publish:
+    needs: [check-version, test]
+    if: needs.check-version.outputs.version-changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        uses: ./.github/actions/setup-env
+        with:
+          force-install: true
+
+      - name: Build extension
+        run: pnpm build
+
+      - name: Package extension
+        run: pnpm package
+
+      - name: Publish to VS Code Marketplace
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
+        run: pnpm publish
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ needs.check-version.outputs.new-version }}
+          release_name: v${{ needs.check-version.outputs.new-version }}
+          body: |
+            Release version ${{ needs.check-version.outputs.new-version }}
+            
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
+          draft: false
+          prerelease: false
+
+      - name: Upload VSIX to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./vue-prop-konverter-${{ needs.check-version.outputs.new-version }}.vsix
+          asset_name: vue-prop-konverter-${{ needs.check-version.outputs.new-version }}.vsix
+          asset_content_type: application/octet-stream
