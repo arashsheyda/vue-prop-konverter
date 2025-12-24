@@ -1,3 +1,14 @@
+# [Unreleased]
+
+### Changed
+
+* **BREAKING:** Complete architecture refactoring from regex-based parsing to AST-based approach
+* Now uses Babel for TypeScript AST parsing and transformation
+* Now uses @vue/compiler-sfc for Vue SFC parsing
+* Improved accuracy and reliability of prop type inference
+* Better support for complex nested types and expressions
+* Enhanced comment preservation (JSDoc and inline comments)
+
 # [1.1.0](https://github.com/arashsheyda/vue-prop-konverter/compare/v1.0.0...v1.1.0) (2025-10-14)
 
 

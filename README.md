@@ -26,14 +26,18 @@ Convert Vue <code>defineProps()</code> object-style definitions into <b>type-saf
 
 ## Features
 
+- 🚀 **Robust AST-based parsing** using Babel and Vue's compiler-sfc
 - Converts **object-style `defineProps`** to TypeScript generic + destructuring syntax
 - Automatically replaces `props.propName` usages with destructured variables
 - Supports:
   - Default values
   - Required props
   - `PropType<T>` for arrays, objects, or custom types
+  - JSDoc and inline comments preservation
+  - Complex nested types and expressions
 - Works only in typescript blocks (`<script lang="ts">`)
 - QuickFix via the VS Code **lightbulb**
+- **No regex parsing** - fully accurate type inference
 
 ## Demo
 
@@ -114,9 +118,18 @@ Then press `F5` in VS Code to open a Development Extension Host with the extensi
 4. Select `Replace defineProps() with type-safe variant and update usage`
 5. The props will be converted automatically
 
+## Architecture
+
+This extension uses:
+- **[@vue/compiler-sfc](https://github.com/vuejs/core/tree/main/packages/compiler-sfc)** for parsing Vue single-file components
+- **[Babel](https://babeljs.io/)** for AST traversal and transformation of TypeScript code
+- **VS Code Language Server** for diagnostics and quick fixes
+
+This approach provides accurate, type-safe transformations without relying on fragile regex patterns.
+
 ## Requirements
 
-- VS Code 1.90+
+- VS Code 1.106+
 - Vue 3 with `<script setup lang="ts">`
 - TypeScript installed in your project
 
