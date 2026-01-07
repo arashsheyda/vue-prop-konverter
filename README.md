@@ -102,7 +102,7 @@ const {
 ### Locally (for development)
 
 ```bash
-git clone https://github.com/yourusername/vue-prop-konverter.git
+git clone https://github.com/arashsheyda/vue-prop-konverter.git
 cd vue-prop-konverter
 pnpm install
 pnpm run build
