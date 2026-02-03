@@ -47,7 +47,7 @@ runs:
         echo "cache-key=${packageManagerVersion}-node-${enginesNodeVersion}-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}">> $GITHUB_OUTPUT
 
     - name: Setup Node
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version: ${{ steps.node-version.outputs.node-version }}
 
